@@ -10,6 +10,6 @@ extract Mysql table structure to excel
 
 导出的表就这个样子↓
 
-![image]()
+![image](https://github.com/datian9966/emts2e/blob/master/resources/example1.png)
 
-![image]()
+![image](https://github.com/datian9966/emts2e/blob/master/resources/example2.png)
