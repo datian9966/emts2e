@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 )
+
 import _ "github.com/go-sql-driver/mysql"
 
 type Structure struct {
@@ -32,7 +33,7 @@ func main() {
 		fileName string
 	)
 
-	//获取参数
+	//命令行参数
 	u := flag.String("url", "", "数据库url")
 	d := flag.String("db", "", "库名")
 	un := flag.String("u", "", "用户名")
@@ -47,8 +48,8 @@ func main() {
 	password = *p
 	fileName = *f
 
+	//如果命令行参数没有输全 则开启交互模式
 	if url == "" || dbName == "" || userName == "" || password == "" {
-		//如果flag模式的参数没有输入全 则启动交互模式
 		fmt.Println("请输入数据库url: (必填 例:localhost:3306)")
 		fmt.Scanln(&url)
 		fmt.Println("请输入数据库名称: (必填)")
@@ -61,6 +62,7 @@ func main() {
 		fmt.Scanln(&fileName)
 	}
 
+	//如果经过两种模式后 参数还是不全 则结束程序
 	if url == "" || dbName == "" || userName == "" || password == "" {
 		fmt.Println("参数不全,无法启动程序")
 		return
@@ -75,9 +77,11 @@ func main() {
 	db, _ := sql.Open("mysql", ""+userName+":"+password+"@tcp("+url+")/"+dbName+"?charset=utf8")
 
 	xlsx := excelize.NewFile()
+
 	xlsx.SetActiveSheet(0)
 	style, _ := xlsx.NewStyle(`{"border":[{"type":"left","color":" 000000","style":1},{"type":"top","color":"000000","style":1},{"type":"bottom","color":"000000","style":1},{"type":"right","color":"000000","style":1}]}`)
 	hyperLinkStyle, _ := xlsx.NewStyle(`{"border":[{"type":"left","color":" 000000","style":1},{"type":"top","color":"000000","style":1},{"type":"bottom","color":"000000","style":1},{"type":"right","color":"000000","style":1}],"font":{"color":"#1265BE","underline":"single"}}`)
+
 	xlsx.SetSheetName("Sheet1", "概览")
 	xlsx.SetCellValue("概览", "A1", "序号")
 	xlsx.SetCellStyle("概览", "A1", "A1", style)
@@ -86,11 +90,14 @@ func main() {
 	xlsx.SetCellValue("概览", "C1", "表名")
 	xlsx.SetCellStyle("概览", "C1", "C1", style)
 	xlsx.SetColWidth("概览", "B", "C", 50)
+
 	tableRows, _ := db.Query("SELECT TABLE_NAME,TABLE_COMMENT FROM information_schema.TABLES WHERE table_schema = '" + dbName + "'")
+	defer tableRows.Close()
+
 	var count float64
 	db.QueryRow("select count(*) FROM information_schema.TABLES WHERE table_schema = '" + dbName + "'").Scan(&count)
+
 	tableRowIndex := 2
-	defer tableRows.Close()
 	for tableRows.Next() {
 		var TableName string
 		var TableComment string
