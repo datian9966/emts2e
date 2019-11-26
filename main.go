@@ -15,7 +15,7 @@ import (
 import _ "github.com/go-sql-driver/mysql"
 
 type Structure struct {
-	columnName             sql.NullString
+	ColumnName             sql.NullString
 	DataType               sql.NullString
 	CharacterMaximumLength sql.NullString
 	IsNullable             sql.NullString
@@ -123,8 +123,8 @@ func main() {
 		for rows.Next() {
 			rowIndexS := strconv.Itoa(rowIndex)
 			s := Structure{}
-			rows.Scan(&s.columnName, &s.DataType, &s.CharacterMaximumLength, &s.IsNullable, &s.ColumnDefault, &s.ColumnComment)
-			xlsx.SetCellValue(TableName, "A"+rowIndexS, s.columnName.String)
+			rows.Scan(&s.ColumnName, &s.DataType, &s.CharacterMaximumLength, &s.IsNullable, &s.ColumnDefault, &s.ColumnComment)
+			xlsx.SetCellValue(TableName, "A"+rowIndexS, s.ColumnName.String)
 			xlsx.SetCellStyle(TableName, "A"+rowIndexS, "A"+rowIndexS, style)
 			xlsx.SetCellValue(TableName, "B"+rowIndexS, s.DataType.String)
 			xlsx.SetCellStyle(TableName, "B"+rowIndexS, "B"+rowIndexS, style)
