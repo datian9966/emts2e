@@ -58,7 +58,7 @@ func main() {
 		fmt.Scanln(&userName)
 		fmt.Println("请输入数据库密码: (必填)")
 		fmt.Scanln(&password)
-		fmt.Println("请输入导出文件名称: (选填 默认 structure.xlsx 如自定义名字 .xlsx后缀也要写全)")
+		fmt.Println("请输入导出文件名称: (选填 不填直接回车)")
 		fmt.Scanln(&fileName)
 	}
 
@@ -70,6 +70,8 @@ func main() {
 
 	if fileName == "" {
 		fileName = "structure.xlsx"
+	} else {
+		fileName = fileName + ".xlsx"
 	}
 
 	fmt.Println("参数校验通过,程序开始开始执行")
@@ -93,7 +95,10 @@ func main() {
 
 	tableRows, _ := db.Query("SELECT TABLE_NAME,TABLE_COMMENT FROM information_schema.TABLES WHERE table_schema = '" + dbName + "'")
 	defer tableRows.Close()
-
+	if err != nil {
+		fmt.Println(err)
+	}
+	
 	var count float64
 	db.QueryRow("select count(*) FROM information_schema.TABLES WHERE table_schema = '" + dbName + "'").Scan(&count)
 
@@ -149,8 +154,8 @@ func main() {
 		fmt.Println("当前已完成" + strconv.Itoa(int((float64(tableRowIndex-1)/count)*100)) + "%...")
 		tableRowIndex++
 	}
-	err := xlsx.SaveAs(getCurrentDirectory() + "/" + fileName)
-	fmt.Println("表结构导出完毕完毕,再见")
+	err = xlsx.SaveAs(getCurrentDirectory() + "/" + fileName)
+	fmt.Println("表结构导出完毕完毕,再见! "+getCurrentDirectory() + "/" + fileName)
 	if err != nil {
 		fmt.Println(err)
 	}
